@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Juliaxtran/tinyapp/issues"
   },
-  "homepage": "https://github.com/Juliaxtran/tinyapp#readme"
+  "homepage": "https://github.com/Juliaxtran/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
 }

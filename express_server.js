@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 const PORT = 8080; // default port 8080
 const urlDatabase = {
@@ -8,8 +9,23 @@ const urlDatabase = {
 
 
 app.set("view engine", "ejs");
+app.use(morgan('dev'));
 
-app.get("/urls", (req, res) => {
+app.get("/urls/:shortURL", (req, res) => {
+ const longURL = urlDatabase[req.params.shortURL]
+  const templateVars = { 
+    longURL,
+    shortURL : req.params.shortURL
+ 
+  };  
+  
+  res.render("urls_show", templateVars);
+
+});
+
+
+
+app.get("/urls/", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });

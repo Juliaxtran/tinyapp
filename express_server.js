@@ -21,17 +21,17 @@ const generateRandomString = () => {
   return randomString;
 };
 
-
+// -- Generating a short Url
 
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
-  const shortURL = generateRandomString();
+  const id = generateRandomString();
   if (!longURL.includes("http")) {
     longURL = "https://" + longURL;
   }
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[id] = longURL;
 
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls/${id}`);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -52,7 +52,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 
-
+// -- short Url with redirection to website 
 
 app.get("/urls/", (req, res) => {
   const templateVars = { urls: urlDatabase };

@@ -11,11 +11,17 @@ const urlDatabase = {
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
 
-app.get("/urls/:shortURL", (req, res) => {
- const longURL = urlDatabase[req.params.shortURL]
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+
+app.get("/urls/:id", (req, res) => {
+ const longURL = urlDatabase[req.params.id]
   const templateVars = { 
     longURL,
-    shortURL : req.params.shortURL
+    shortURL : req.params.id
  
   };  
   
@@ -28,12 +34,6 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/urls/", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
-});
-
-
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 

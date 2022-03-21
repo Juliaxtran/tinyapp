@@ -23,10 +23,15 @@ const generateRandomString = () => {
 
 
 
-
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  let longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  if (!longURL.includes("http")) {
+    longURL = "https://" + longURL;
+  }
+  urlDatabase[shortURL] = longURL;
+
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -34,12 +39,12 @@ app.get("/urls/new", (req, res) => {
 });
 
 
-app.get("/urls/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
+
+app.get("/urls/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
   const templateVars = {
     longURL,
-    shortURL: req.params.id
-
+    shortURL: req.params.shortURL
   };
 
   res.render("urls_show", templateVars);
@@ -48,19 +53,26 @@ app.get("/urls/:id", (req, res) => {
 
 
 
+
 app.get("/urls/", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+
+});
+
+
 
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

@@ -10,7 +10,7 @@
   <header>
     <%- include('partials/_header'); %>
   </header>
-
+<!-- TinyUrl of LongUrl and Link Redirection -->
   <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
@@ -26,7 +26,7 @@
     <div class="card-header"></div>
     <div class="card-body">
       <h3 class="card-title">Edit</h3>
-      <form class="form-inline text-center" action="/urls/<%= shortURL%>" method="POST">
+      <form style = "justify-content : center" class="form-inline text-center" action="/urls/<%= shortURL%>" method="POST">
         <div class="form-group mb-2"> <label for="editURL">New Url:</label>
           <input class="form-control" type="text" name="longURL" placeholder="http://" style="width: 300px; margin: 1em">
           <button type="submit" class="btn btn-primary">Submit</button></div> 

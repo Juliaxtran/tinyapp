@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-const cookieParser =require('cookie-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 3000; // default port 8080
 const urlDatabase = {
@@ -12,7 +12,7 @@ const urlDatabase = {
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser())
+app.use(cookieParser());
 
 const generateRandomString = () => {
   let randomString = '';
@@ -24,15 +24,28 @@ const generateRandomString = () => {
 };
 
 
+
+//--Logput
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+
+  
+});
+
+
+
 //--Username Login
 
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
-  
-const templateVars = {
-  username : req.cookies["username"],
-}
-  res.redirect("/urls", templateVars);
+ 
+  const templateVars = { urls: urlDatabase,
+    username : req.cookies["username"]
+  };
+
+  res.render("urls_index", templateVars);
 
 });
 
@@ -43,7 +56,7 @@ app.post("/urls/:shortUrl", (req, res) => {
   const longURL = req.body.longURL;
   urlDatabase [shortURL] = longURL;
   
-}); 
+});
 
 
 
@@ -75,7 +88,12 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  
+  const templateVars = {
+    username : req.cookies["username"]
+  };
+  
+  res.render("urls_new", templateVars);
 });
 
 // -- Rendering show page
@@ -84,7 +102,8 @@ app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   const templateVars = {
     longURL,
-    shortURL: req.params.shortURL
+    shortURL: req.params.shortURL,
+    username : req.cookies["username"]
   };
 
   res.render("urls_show", templateVars);
@@ -95,7 +114,9 @@ app.get("/urls/:shortURL", (req, res) => {
 // -- short Url with redirection to longURL website 
 
 app.get("/urls/", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase,
+    username : req.cookies["username"]
+  };
   res.render("urls_index", templateVars);
 });
 

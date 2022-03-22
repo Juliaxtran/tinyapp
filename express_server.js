@@ -21,6 +21,20 @@ const generateRandomString = () => {
   return randomString;
 };
 
+
+
+
+//-- Generating the delete button
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+
+});
+
+
+
 // -- Generating a short Url
 
 app.post("/urls", (req, res) => {

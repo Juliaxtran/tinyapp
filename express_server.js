@@ -25,7 +25,7 @@ const generateRandomString = () => {
 
 
 
-//--Logput
+//--Logout
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");

@@ -1,8 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
+const cookieParser =require('cookie-parser');
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 3000; // default port 8080
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -11,6 +12,7 @@ const urlDatabase = {
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser())
 
 const generateRandomString = () => {
   let randomString = '';
@@ -22,8 +24,17 @@ const generateRandomString = () => {
 };
 
 
+//--Username Login
 
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  
+const templateVars = {
+  username : req.cookies["username"],
+}
+  res.redirect("/urls", templateVars);
 
+});
 
 //--Edit a long Url 
 
@@ -31,7 +42,7 @@ app.post("/urls/:shortUrl", (req, res) => {
   const shortURL = req.params.shortUrl;
   const longURL = req.body.longURL;
   urlDatabase [shortURL] = longURL;
-  res.redirect("/urls");
+  
 }); 
 
 

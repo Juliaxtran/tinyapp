@@ -11,9 +11,18 @@
       </div>
     </div>
 
-    <!-- Login Info -->
-<div>
+  
 
+
+
+<!-- Login and Logout -->
+<% if (username) { %>
+  <h5><%= username %></h5>
+  <form class="form-inline" action="/logout" method="POST">
+      <button type="submit" class="btn btn btn-outline-dark">Logout</button>
+    </div>
+  </form>
+<% } else { %>
   <form class="form-inline" action="/login" method="POST">
     <div class="form-group mb-2">
   
@@ -22,9 +31,7 @@
     </div>
   </form>
 
-</div>
-
-
+  <% } %>
 
 
 

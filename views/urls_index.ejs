@@ -34,9 +34,9 @@
           <tr>
             <td><%= url %></td>
             <td><%= urls[url] %></td>
-            <td> <form method="POST" action="/urls/_show">
-              <button type="submit" class="btn btn-outline-primary">Edit </button>
-              </form></td>
+            <td> 
+              <a href = "/urls/<%= url%>" class="btn btn-outline-primary"> Edit</a>
+              </td>
             <td> <form method="POST" action="/urls/<%= url%>/delete">
               <button type="submit" class="btn btn-outline-danger"> Delete </button>
               </form></td>

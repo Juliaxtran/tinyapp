@@ -24,6 +24,18 @@ const generateRandomString = () => {
 
 
 
+
+//--Edit a long Url 
+
+app.post("/urls/:shortUrl", (req, res) => {
+  const shortURL = req.params.shortUrl;
+  const longURL = req.body.longURL;
+  urlDatabase [shortURL] = longURL;
+  res.redirect("/urls");
+}); 
+
+
+
 //-- Generating the delete button
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -32,6 +44,9 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 
 });
+
+
+
 
 
 
@@ -52,7 +67,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-
+// -- Rendering show page
 
 app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
@@ -66,7 +81,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 
-// -- short Url with redirection to website 
+// -- short Url with redirection to longURL website 
 
 app.get("/urls/", (req, res) => {
   const templateVars = { urls: urlDatabase };

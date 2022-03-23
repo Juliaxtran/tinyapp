@@ -16,8 +16,8 @@
 
 
 <!-- Login and Logout -->
-<% if (username) { %>
-  <h5><%= username %></h5>
+<% if (user) { %>
+  <h7>Login in as:<%= user.email %></h7>
   <form class="form-inline" action="/logout" method="POST">
       <button type="submit" class="btn btn btn-outline-dark">Logout</button>
     </div>

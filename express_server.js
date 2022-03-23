@@ -40,26 +40,35 @@ const generateRandomString = () => {
   return randomString;
 };
 
+
+
 // - Post Registration Form 
 
 app.post("/register", (req, res) => {
   const id = generateRandomString();
-  const email = req.body.email;
-  const password = req.body.password;
+  console.log("Check id",id);
+  const {email, password}= req.body;
   users[id] = {id, email, password};
-  res.cookie("user_id", id);
+
+res.cookie("user_id", id);
+
+
   res.redirect("/urls");
-  
+
 });
 
 
+// Look up user by object
+//user : users.req.cookies["user_id"]
+// users.email
 
-// -- Get Registration Form
+// Handle Registration Errors 
+// if (email === '' || password === '')
 
 app.get("/register", (req, res) => {
 
   const templateVars = { urls: urlDatabase,
-    username : req.cookies["username"]
+    user : users[req.cookies["user_id"]]
   };
 
   res.render("urls_template", templateVars)
@@ -71,10 +80,8 @@ app.get("/register", (req, res) => {
 //--Logout
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
-
-  
 });
 
 
@@ -85,13 +92,13 @@ app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
  
   const templateVars = { urls: urlDatabase,
-    username : req.cookies["username"]
+    user : users[req.cookies["user_id"]]
   };
 
   res.render("urls_index", templateVars);
 
 });
-
+ 
 //--Edit a long Url 
 
 app.post("/urls/:shortUrl", (req, res) => {
@@ -108,7 +115,7 @@ app.post("/urls/:shortUrl", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
 
   delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+ res.redirect("/urls");
 
 });
 
@@ -127,13 +134,13 @@ app.post("/urls", (req, res) => {
   }
   urlDatabase[id] = longURL;
 
-  res.redirect(`/urls/${id}`);
+   res.redirect(`/urls/${id}`);
 });
 
 app.get("/urls/new", (req, res) => {
   
   const templateVars = {
-    username : req.cookies["username"]
+    user : users[req.cookies["user_id"]]
   };
   
   res.render("urls_new", templateVars);
@@ -146,10 +153,10 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     longURL,
     shortURL: req.params.shortURL,
-    username : req.cookies["username"]
+    user : users[req.cookies["user_id"]]
   };
 
-  res.render("urls_show", templateVars);
+ res.render("urls_show", templateVars);
 
 });
 
@@ -158,7 +165,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/urls/", (req, res) => {
   const templateVars = { urls: urlDatabase,
-    username : req.cookies["username"]
+    user : users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
 });
@@ -181,3 +188,7 @@ app.get("/urls.json", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
+
+

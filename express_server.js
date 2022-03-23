@@ -4,15 +4,32 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 3000; // default port 8080
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+
 
 app.set("view engine", "ejs");
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+
+const urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
+};
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 
 const generateRandomString = () => {
   let randomString = '';
@@ -22,6 +39,19 @@ const generateRandomString = () => {
   }
   return randomString;
 };
+
+// - Post Registration Form 
+
+app.post("/register", (req, res) => {
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  users[id] = {id, email, password};
+  res.cookie("user_id", id);
+  res.redirect("/urls");
+  
+});
+
 
 
 // -- Get Registration Form
@@ -49,7 +79,7 @@ app.post("/logout", (req, res) => {
 
 
 
-//--Username Login
+//--Username Login 
 
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);

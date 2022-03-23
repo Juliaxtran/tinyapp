@@ -42,21 +42,28 @@ const generateRandomString = () => {
 
 
 
+const getUserByEmail = (email) => {
+
+  for (const user in users) {
+
+    if (email === users[user].email) {
+      return users[user];
+    }
+  }
+  return null;
+}
+
+
 // - Post Registration Form 
 
 app.post("/register", (req, res) => {
 
 
   const { email, password } = req.body;
-  if (!email || !password) {
-    res.sendStatus(400);
-  }
-  console.log(users);
-  for (const user in users) {
+  const user = getUserByEmail(email);
 
-    if (email === users[user].email) {
-      res.sendStatus(400);
-    }
+  if (user) {
+    return res.sendStatus(400);
   }
 
 
@@ -102,14 +109,21 @@ app.post("/logout", (req, res) => {
 //--Username Login 
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
 
-  const templateVars = {
-    urls: urlDatabase,
-    user: users[req.cookies["user_id"]]
-  };
+  let email = req.body.email;
+  let password = req.body.password;
+  const user = getUserByEmail(email);
 
-  res.render("urls_index", templateVars);
+  if (!user) {
+    return res.sendStatus(403);
+  }
+
+  if (user.password !== password) {
+    return res.sendStatus(403);
+  }
+
+  res.cookie("user_id", user.id)
+  res.redirect("/urls");
 
 });
 

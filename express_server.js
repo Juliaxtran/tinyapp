@@ -28,7 +28,7 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 
 
 const generateRandomString = () => {
@@ -51,7 +51,7 @@ const getUserByEmail = (email) => {
     }
   }
   return null;
-}
+};   
 
 
 // - Post Registration Form 
@@ -91,7 +91,7 @@ app.get("/register", (req, res) => {
     user: users[req.cookies["user_id"]]
   };
 
-  res.render("urls_register", templateVars)
+  res.render("urls_register", templateVars);
 });
 
 
@@ -116,13 +116,13 @@ app.post("/login", (req, res) => {
 
   if (!user) {
     return res.sendStatus(403);
-  }
+  } 
 
   if (user.password !== password) {
     return res.sendStatus(403);
   }
 
-  res.cookie("user_id", user.id)
+  res.cookie("user_id", user.id);
   res.redirect("/urls");
 
 });
@@ -136,7 +136,7 @@ app.get("/login", (req, res) => {
     user: users[req.cookies["user_id"]]
   };
 
-  res.render("urls_login", templateVars)
+  res.render("urls_login", templateVars);
 });
 
 

@@ -24,6 +24,19 @@ const generateRandomString = () => {
 };
 
 
+// -- Get Registration Form
+
+app.get("/register", (req, res) => {
+
+  const templateVars = { urls: urlDatabase,
+    username : req.cookies["username"]
+  };
+
+  res.render("urls_template", templateVars)
+});
+
+
+
 
 //--Logout
 

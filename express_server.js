@@ -53,25 +53,24 @@ app.post("/register", (req, res) => {
   }
   console.log(users);
   for (const user in users) {
-  
-   if(email === users[user].email){
-     console.log("Check 2", users[user].email)
-   res.sendStatus(400);
-   }
+
+    if (email === users[user].email) {
+      res.sendStatus(400);
+    }
   }
-    
 
 
-    const id = generateRandomString();
-    users[id] = { id, email, password };
+
+  const id = generateRandomString();
+  users[id] = { id, email, password };
 
 
-    res.cookie("user_id", id);
+  res.cookie("user_id", id);
 
 
-    res.redirect("/urls");
+  res.redirect("/urls");
 
-  });
+});
 
 
 
@@ -85,7 +84,7 @@ app.get("/register", (req, res) => {
     user: users[req.cookies["user_id"]]
   };
 
-  res.render("urls_template", templateVars)
+  res.render("urls_register", templateVars)
 });
 
 
@@ -113,6 +112,21 @@ app.post("/login", (req, res) => {
   res.render("urls_index", templateVars);
 
 });
+
+
+//--Login Form
+app.get("/login", (req, res) => {
+
+  const templateVars = {
+    urls: urlDatabase,
+    user: users[req.cookies["user_id"]]
+  };
+
+  res.render("urls_login", templateVars)
+});
+
+
+
 
 //--Edit a long Url 
 

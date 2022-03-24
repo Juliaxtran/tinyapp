@@ -1,8 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-const bcrypt = require("bcryptjs")
-const cookieSession = require("cookie-session")
+const bcrypt = require("bcryptjs");
+const cookieSession = require("cookie-session");
 const req = require("express/lib/request");
 const app = express();
 const PORT = 4000; // default port 8080
@@ -74,15 +74,15 @@ const getUserByEmail = (email) => {
 
 
 const urlsForUser = (id) => {
-  const urlsForThisUser = {}
+  const urlsForThisUser = {};
   for (const key in urlDatabase) {
     if (id === urlDatabase[key]["userID"]) {
-      urlsForThisUser[key] = urlDatabase[key].longURL
+      urlsForThisUser[key] = urlDatabase[key].longURL;
 
     }
   }
   return urlsForThisUser;
-}
+};
 
 
 
@@ -101,7 +101,7 @@ app.post("/register", (req, res) => {
     return res.status(400).send("This Email is already in use.Please Login.");
   }
 
-  const salt =  bcrypt.genSaltSync(10);
+  const salt = bcrypt.genSaltSync(10);
   const hashPassword = bcrypt.hashSync(password, salt);
 
 
@@ -120,7 +120,7 @@ app.post("/register", (req, res) => {
 
 
 
- 
+
 
 
 app.get("/register", (req, res) => {
@@ -145,7 +145,7 @@ app.post("/logout", (req, res) => {
 
 
 
-// Username Login 
+// Username Login
 
 app.post("/login", (req, res) => {
 
@@ -158,16 +158,16 @@ app.post("/login", (req, res) => {
   }
 
 
-  bcrypt.compare(password, user.password,(err, success)=>{
-  
-    if(!success){
+  bcrypt.compare(password, user.password, (err, success) => {
+
+    if (!success) {
       return res.status(403).send("Password does not match the one we have on record.Please try again.");
     }
 
     req.session["user_id"] = user.id;
     res.redirect("/urls");
 
-  })
+  });
 
 
 });
@@ -192,13 +192,15 @@ app.get("/login", (req, res) => {
 
 app.post("/urls/:shortUrl", (req, res) => {
   const user_id = req.session["user_id"];
-  const url = urlDatabase[req.params.shortURL]
+  const shortUrl = req.params.shortUrl;
+  console.log("SHORT", shortUrl);
+  console.log("Data", urlDatabase);
+  const url = urlDatabase[shortUrl];
 
   if (user_id === url.userID) {
-    const shortURL = req.params.shortUrl;
     const longURL = req.body.longURL;
-    urlDatabase[shortURL].longURL = longURL;
-    return res.redirect("/urls")
+    urlDatabase[shortUrl].longURL = longURL;
+    return res.redirect("/urls");
   }
 
 
@@ -225,7 +227,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 
 });
- 
+
 
 
 
@@ -242,7 +244,7 @@ app.post("/urls", (req, res) => {
     longURL = "https://" + longURL;
   }
 
-  urlDatabase[shortURL] = { longURL: longURL, userID: userID }
+  urlDatabase[shortURL] = { longURL: longURL, userID: userID };
 
   res.redirect(`/urls/${shortURL}`);
 });
@@ -252,7 +254,7 @@ app.post("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const user_id = req.session["user_id"];
   if (!user_id) {
-    return res.redirect("/register")
+    return res.redirect("/register");
   }
 
 
@@ -286,18 +288,18 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 
-//  short Url with redirection to longURL website 
+//short Url with redirection to longURL website 
 
 app.get("/urls/", (req, res) => {
   const user_id = req.session["user_id"];
 
 
-  const urlsForThisUser = {}
+  const urlsForThisUser = {};
   for (let key in urlDatabase) {
 
     if (user_id === urlDatabase[key].userID) {
 
-      urlsForThisUser[key] = urlDatabase[key]
+      urlsForThisUser[key] = urlDatabase[key];
 
     }
   }
@@ -314,8 +316,13 @@ app.get("/urls/", (req, res) => {
 
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  let url = urlDatabase[req.params.shortURL].longURL;
+  if (!url.includes("http")) {
+    url = "https://" + url;
+  }
+
+
+  res.redirect(url);
 
 });
 

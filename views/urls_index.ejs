@@ -33,19 +33,19 @@
           </tr>
         </thead>
         <tbody>
-          <% for(let url in urls) { %>
+          <% for(let shortCode in urls) { %>
             <tr>
               <td>
-                <%= url %>
+                <%= shortCode %>
               </td>
               <td>
-                <%= urls[url] %>
+                <%= urls[shortCode].longURL %>
               </td>
               <td>
-                <a href="/urls/<%= url%>" class="btn btn-outline-primary"> Edit</a>
+                <a href="/urls/<%= shortCode%>" class="btn btn-outline-primary"> Edit</a>
               </td>
               <td>
-                <form method="POST" action="/urls/<%= url%>/delete">
+                <form method="POST" action="/urls/<%= shortCode%>/delete">
                   <button type="submit" class="btn btn-outline-danger"> Delete </button>
                 </form>
               </td>

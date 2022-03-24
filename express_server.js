@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const req = require("express/lib/request");
 const app = express();
 const PORT = 4000; // default port 8080
 
@@ -10,6 +11,7 @@ app.set("view engine", "ejs");
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 
 
 const urlDatabase = {
@@ -22,7 +24,6 @@ const urlDatabase = {
     userID: "aJ48lW"
   }
 };
-
 
 
 const users = {
@@ -61,8 +62,6 @@ const getUserByEmail = (email) => {
   return null;
 };
 
-
-// - Post Registration Form 
 
 app.post("/register", (req, res) => {
 
@@ -160,9 +159,7 @@ app.get("/login", (req, res) => {
 
 app.post("/urls/:shortUrl", (req, res) => {
   const shortURL = req.params.shortUrl;
-  console.log("Short Url", shortURL)
   const longURL = req.body.longURL;
-  console.log("Long Url", longURL)
   urlDatabase[shortURL].longURL = longURL;
 
 
@@ -224,7 +221,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const urlObject = urlDatabase[shortURL];
   const longURL = urlObject.longURL;
   if (urlObject.userID !== req.cookies["user_id"]) {
-    return res.redirect("/urls");
+    return res.send("<h1>You don't have access to this page</h1>");
   }
   const templateVars = {
 
@@ -243,8 +240,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/urls/", (req, res) => {
   const user_id = req.cookies["user_id"];
-  console.log("User", user_id)
-  console.log(urlDatabase);
+ 
 
   const urlsForThisUser = {}
   for (let key in urlDatabase) {

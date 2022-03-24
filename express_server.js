@@ -3,6 +3,10 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieSession = require("cookie-session");
+const { getUserByEmail, generateRandomString, urlsForUser } = require("./helpers");
+
+// const urlsForThisUser = require("./helper.js")
+
 const req = require("express/lib/request");
 const app = express();
 const PORT = 4000; // default port 8080
@@ -15,8 +19,6 @@ app.use(cookieSession({
   name: "session",
   keys: ['key1', 'key2']
 }));
-
-
 
 
 const urlDatabase = {
@@ -34,7 +36,6 @@ const urlDatabase = {
   }
 };
 
-
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -49,45 +50,6 @@ const users = {
 };
 
 
-const generateRandomString = () => {
-  let randomString = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
-  for (let i = 0; i < 6; i++) {
-    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return randomString;
-};
-
-
-
-const getUserByEmail = (email) => {
-
-  for (const user in users) {
-
-    if (email === users[user].email) {
-      return users[user];
-    }
-  }
-  return null;
-};
-
-
-
-const urlsForUser = (id) => {
-  const urlsForThisUser = {};
-  for (const key in urlDatabase) {
-    if (id === urlDatabase[key]["userID"]) {
-      urlsForThisUser[key] = urlDatabase[key].longURL;
-
-    }
-  }
-  return urlsForThisUser;
-};
-
-
-
-
-
 
 // Post Registeration Form
 
@@ -95,7 +57,13 @@ app.post("/register", (req, res) => {
 
 
   const { email, password } = req.body;
-  const user = getUserByEmail(email);
+  const user = getUserByEmail(email, users);
+
+  if (email === "" || password === "") {
+    return res.status(400).send("Fields cannoot be empty");
+  }
+
+
 
   if (user) {
     return res.status(400).send("This Email is already in use.Please Login.");
@@ -151,7 +119,11 @@ app.post("/login", (req, res) => {
 
   let email = req.body.email;
   let password = req.body.password;
-  const user = getUserByEmail(email);
+  const user = getUserByEmail(email, users);
+
+  console.log("User", user);
+  console.log("Email", email);
+
 
   if (!user) {
     return res.status(403).send("Email does not exist. Please register a new account.");
@@ -188,7 +160,7 @@ app.get("/login", (req, res) => {
 
 
 
-// Edit a long Url 
+// Edit a long Url
 
 app.post("/urls/:shortUrl", (req, res) => {
   const user_id = req.session["user_id"];
@@ -288,11 +260,11 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 
-//short Url with redirection to longURL website 
+//short Url with redirection to longURL website
 
 app.get("/urls/", (req, res) => {
   const user_id = req.session["user_id"];
-
+  console.log("Check 1", users);
 
   const urlsForThisUser = {};
   for (let key in urlDatabase) {
@@ -338,7 +310,3 @@ app.get("/urls.json", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-
-
-

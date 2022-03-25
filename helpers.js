@@ -1,7 +1,6 @@
 
 
 
-
 const generateRandomString = () => {
   let randomString = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
@@ -17,22 +16,36 @@ const getUserByEmail = (email, users) => {
   for (const userId in users) {
     const user = users[userId];
     if (user.email === email) {
-    
+
       return user;
     }
   }
   return null;
 };
 
-const urlsForUser = (id) => {
-  const urlsForThisUser = {};
-  for (const key in urlDatabase) {
-    if (id === urlDatabase[key]["userID"]) {
-      urlsForThisUser[key] = urlDatabase[key].longURL;
+const urlsForThisUser = (user_id, urlDatabase) => {
+  let userUrls = {};
+  console.log(user_id)
+  for (let key in urlDatabase) {
+
+    if (user_id === urlDatabase[key].userID) {
+
+      userUrls[key] = urlDatabase[key];
 
     }
   }
-  return urlsForThisUser;
-};
+ return userUrls;
+}
 
-module.exports = { generateRandomString, getUserByEmail, urlsForUser};
+
+
+const isLoggedIn = (user_id, users) => {
+  let userKeys = Object.keys(users);
+  if (user_id === undefined || !userKeys.includes(user_id)) {
+    return false;
+  }
+  return true;
+}
+
+
+module.exports = { generateRandomString, getUserByEmail, urlsForThisUser, isLoggedIn };

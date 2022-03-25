@@ -3,12 +3,12 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const cookieSession = require("cookie-session");
-const { getUserByEmail, generateRandomString, urlsForUser } = require("./helpers");
+const { getUserByEmail, generateRandomString, urlsForThisUser, isLoggedIn } = require("./helpers");
 
 
 const req = require("express/lib/request");
 const app = express();
-const PORT = 4000; // default port 8080
+const PORT = 8000; // default port 8080
 
 
 app.set("view engine", "ejs");
@@ -50,7 +50,8 @@ const users = {
 
 
 
-// Post Registeration Form
+
+// Post Routes - Registeration Form
 
 app.post("/register", (req, res) => {
 
@@ -58,8 +59,8 @@ app.post("/register", (req, res) => {
   const { email, password } = req.body;
   const user = getUserByEmail(email, users);
 
-  if (email === "" || password === "") {
-    return res.status(400).send("Fields cannoot be empty");
+  if (!email || !password) {
+    return res.status(400).send("Fields cannot be empty");
   }
 
 
@@ -84,22 +85,6 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 
 });
-
-
-
-
-
-
-app.get("/register", (req, res) => {
-
-  const templateVars = {
-    urls: urlDatabase,
-    user: users[req.session["user_id"]]
-  };
-
-  res.render("urls_register", templateVars);
-});
-
 
 
 
@@ -139,30 +124,13 @@ app.post("/login", (req, res) => {
 
 });
 
-
-
-// Login Form
-app.get("/login", (req, res) => {
-
-  const templateVars = {
-    urls: urlDatabase,
-    user: users[req.session["user_id"]]
-  };
-
-  res.render("urls_login", templateVars);
-});
-
-
-
-
 // Edit a long Url
 
 app.post("/urls/:shortUrl", (req, res) => {
   const user_id = req.session["user_id"];
   const shortUrl = req.params.shortUrl;
-  console.log("SHORT", shortUrl);
-  console.log("Data", urlDatabase);
   const url = urlDatabase[shortUrl];
+
 
   if (user_id === url.userID) {
     const longURL = req.body.longURL;
@@ -193,23 +161,75 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 });
 
-
-
 // Generating a short Url
 
 app.post("/urls", (req, res) => {
   const userID = req.session["user_id"];
+
+  if (!isLoggedIn(userID, users)) {
+    return res.status(403).send("You don't have authorization post");
+  }
+
+
   let longURL = req.body.longURL;
   const shortURL = generateRandomString();
 
-  if (!longURL.includes("http")) {
-    longURL = "https://" + longURL;
+
+  if (longURL.slice(0, 4) !== "http") {
+    longURL = `https://${longURL}`;
   }
+
+
 
   urlDatabase[shortURL] = { longURL: longURL, userID: userID };
 
   res.redirect(`/urls/${shortURL}`);
 });
+
+
+
+
+// Get Routes
+
+
+app.get("/register", (req, res) => {
+
+  if (isLoggedIn(req.session["user_id"], users)) {
+    res.redirect("/urls");
+    return;
+  }
+
+  const templateVars = {
+    urls: urlDatabase,
+    user: users[req.session["user_id"]]
+  };
+
+  res.render("urls_register", templateVars);
+});
+
+
+
+
+// Login Form
+app.get("/login", (req, res) => {
+
+  if (isLoggedIn(req.session["user_id"], users)) {
+    res.redirect("/urls");
+    return;
+  }
+
+  const templateVars = {
+    urls: urlDatabase,
+    user: users[req.session["user_id"]]
+  };
+
+  res.render("urls_login", templateVars);
+});
+
+
+
+
+
 
 // Generating a new URL
 
@@ -233,7 +253,8 @@ app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   //if the small url does not exists
   if (!urlDatabase[shortURL] || urlDatabase[shortURL] === null) {
-    res.send("The small url does not exists in the database");
+    res.status(302).send("The small url does not exists in the database");
+
   } else {
     const urlObject = urlDatabase[shortURL];
     const longURL = urlObject.longURL;
@@ -261,21 +282,26 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/urls/", (req, res) => {
   const user_id = req.session["user_id"];
 
-  const urlsForThisUser = {};
-  for (let key in urlDatabase) {
+  let templateVars = {
+    user: users[req.session["user_id"]],
+  };
 
-    if (user_id === urlDatabase[key].userID) {
-
-      urlsForThisUser[key] = urlDatabase[key];
-
-    }
+  if (!isLoggedIn(user_id, users)) {
+    return res.render("urls_error");
   }
 
-  const templateVars = {
+
+  let urls = urlsForThisUser(user_id, urlDatabase);
+
+  templateVars = {
     user: users[req.session["user_id"]],
-    urls: urlsForThisUser,
+    urls,
   };
-  console.log(templateVars);
+
+
+
+
+
   res.render("urls_index", templateVars);
 });
 
@@ -283,14 +309,30 @@ app.get("/urls/", (req, res) => {
 
 
 app.get("/u/:shortURL", (req, res) => {
+
+  if (!urlDatabase[req.params.shortURL] || urlDatabase[req.params.shortURL] === null) {
+    res.status(404).send("Content is not found. Page does not exist");
+  }
+
   let url = urlDatabase[req.params.shortURL].longURL;
-  if (!url.includes("http")) {
-    url = "https://" + url;
+  if (url.slice(0, 4) !== "http") {
+    url = `https://${url}`;
   }
 
 
   res.redirect(url);
 
+});
+
+// Root URL
+app.get("/", (req, res) => {
+
+  const templateVars = {
+    urls: urlDatabase,
+    user: users[req.session["user_id"]]
+  };
+
+  res.render("urls_login", templateVars);
 });
 
 

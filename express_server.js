@@ -233,7 +233,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   //if the small url does not exists
   if (!urlDatabase[shortURL] || urlDatabase[shortURL] === null) {
-    res.send("Hey! The small url does not exists in the database");
+    res.send("The small url does not exists in the database");
   } else {
     const urlObject = urlDatabase[shortURL];
     const longURL = urlObject.longURL;

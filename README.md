@@ -6,8 +6,10 @@ The TinyApp homepage includes a form where users can submit a long URL for short
 
 ## Final Product
 
-!["screenshot description"](#)
-!["screenshot description"](#)
+!["screenshot description"](https://github.com/Juliaxtran/tinyapp/blob/main/screenshots/homepage.png?raw=true)
+!["screenshot description"](https://github.com/Juliaxtran/tinyapp/blob/main/screenshots/editpage.png?raw=true)
+!["screenshot description"](https://github.com/Juliaxtran/tinyapp/blob/main/screenshots/newpage.png)
+!["screenshot description"](https://github.com/Juliaxtran/tinyapp/blob/main/screenshots/registerpage.png?raw=true)
 
 ## Dependencies
 
@@ -20,6 +22,6 @@ The TinyApp homepage includes a form where users can submit a long URL for short
 
 
 ## Getting Started
-
+- To start the project run (`npm start`).
 - Install all dependencies (using the `npm install` command).
 - Run the development web server using the `node express_server.js` command.

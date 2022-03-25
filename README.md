@@ -6,8 +6,10 @@ The TinyApp homepage includes a form where users can submit a long URL for short
 
 ## Final Product
 
-!["screenshot description"](#)
-!["screenshot description"](#)
+!["screenshot description"]https://github.com/Juliaxtran/tinyapp/blob/main/screenshots/homepage.png?raw=true
+!["screenshot description"]https://github.com/Juliaxtran/tinyapp/blob/main/screenshots/editpage.png?raw=true
+!["screenshot description"]https://github.com/Juliaxtran/tinyapp/blob/main/screenshots/newpage.png
+!["screenshot description"]https://github.com/Juliaxtran/tinyapp/blob/main/screenshots/registerpage.png?raw=true
 
 ## Dependencies
 

@@ -5,7 +5,6 @@ const bcrypt = require("bcryptjs");
 const cookieSession = require("cookie-session");
 const { getUserByEmail, generateRandomString, urlsForUser } = require("./helpers");
 
-// const urlsForThisUser = require("./helper.js")
 
 const req = require("express/lib/request");
 const app = express();
@@ -66,7 +65,7 @@ app.post("/register", (req, res) => {
 
 
   if (user) {
-    return res.status(400).send("This Email is already in use.Please Login.");
+    return res.status(400).send("This email is already in use.Please Login.");
   }
 
   const salt = bcrypt.genSaltSync(10);
@@ -120,10 +119,6 @@ app.post("/login", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   const user = getUserByEmail(email, users);
-
-  console.log("User", user);
-  console.log("Email", email);
-
 
   if (!user) {
     return res.status(403).send("Email does not exist. Please register a new account.");
@@ -183,8 +178,6 @@ app.post("/urls/:shortUrl", (req, res) => {
 
 
 
-
-
 app.post("/urls/:shortURL/delete", (req, res) => {
   const user_id = req.session["user_id"];
   const url = urlDatabase[req.params.shortURL];
@@ -199,9 +192,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 
 });
-
-
-
 
 
 
@@ -229,7 +219,6 @@ app.get("/urls/new", (req, res) => {
     return res.redirect("/register");
   }
 
-
   const templateVars = {
     user: users[req.session["user_id"]],
 
@@ -242,20 +231,27 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const urlObject = urlDatabase[shortURL];
-  const longURL = urlObject.longURL;
-  if (urlObject.userID !== req.session["user_id"]) {
-    return res.send("<h1>You don't have access to this page</h1>");
+  //if the small url does not exists
+  if (!urlDatabase[shortURL] || urlDatabase[shortURL] === null) {
+    res.send("Hey! The small url does not exists in the database");
+  } else {
+    const urlObject = urlDatabase[shortURL];
+    const longURL = urlObject.longURL;
+    // checking if login
+    if (urlObject.userID !== req.session["user_id"]) {
+      return res.send("<h1>You don't have access to this page</h1>");
+    }
+    const templateVars = {
+
+      longURL,
+      shortURL: req.params.shortURL,
+      user: users[req.session["user_id"]]
+    };
+
+
+    res.render("urls_show", templateVars);
   }
-  const templateVars = {
 
-    longURL,
-    shortURL: req.params.shortURL,
-    user: users[req.session["user_id"]]
-  };
-
-
-  res.render("urls_show", templateVars);
 
 });
 
@@ -264,7 +260,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/urls/", (req, res) => {
   const user_id = req.session["user_id"];
-  console.log("Check 1", users);
 
   const urlsForThisUser = {};
   for (let key in urlDatabase) {
@@ -299,12 +294,9 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 
-
-
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-
 
 
 app.listen(PORT, () => {
